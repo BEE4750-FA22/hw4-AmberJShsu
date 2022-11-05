@@ -177,6 +177,7 @@ optimize!(waste_carbon)
 ```
 
 ## Problem 2.3
+
 ```julia
 round(objective_value(waste_carbon), digits = 3)
 value.(Yc)
