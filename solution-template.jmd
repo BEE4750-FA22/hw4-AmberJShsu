@@ -108,6 +108,11 @@ value.(Y)
 value.(W)
 value.(R)
 ```
+The optimal objective value is $28886.364$, which is 28886.364 dollars/day.
+Accoding to the Y matrix where Y[2] = 0, facility 2, MRF, will not be used.
+![Waste Flow Diagram](IMG_1191.png))
+
+
 # Problem 2
 
 ## Problem 2.1
@@ -140,14 +145,14 @@ Fixed Cost:
 [2000; 1500; 2500] represents the fixed cost ($/d) corresponds to the facility, and the values depend on whether the faicility is operating or not
 
 ```julia
-@objective(waste_carbon, Min, sum([82.5 31.4875 95; 90 46.4875 87.5] .* W) +
-    sum([0 0 77; 82.5 0 98; 0 0 0] .* R) + sum([2000; 1500; 2500] .* Y))
+@objective(waste_carbon, Min, sum([105 33.9875 110; 9 53.9875 100] .* Wc) +
+    sum([0 0 86; 105 0 104; 0 0 0] .* Rc) + sum([2000; 1500; 2500] .* Yc))
 
 #city 1 produces 100 Mg/day of solid waste, and city 2 produces 170 Mg/day of solid waste
-city_out = [100; 170]
+city_produc = [100; 170]
 
 # all waste produced must be within the facility's capacities
-@constraint(waste_carbon, city[i in I], sum(Wc[i,:]) == city_out[i])
+@constraint(waste_carbon, city[c in C], sum(Wc[c,:]) == city_produc[c])
 @constraint(waste_carbon, wte, Wc[1,1] + Wc[2,1] + Rc[2,1] <= 150)
 @constraint(waste_carbon, mrf, Wc[1,2] + Wc[2,2]  <= 350)
 @constraint(waste_carbon, lf, Wc[1,3] + Wc[2,3] + Rc[2,3] + Rc[1,3] <= 200)
@@ -157,7 +162,7 @@ city_out = [100; 170]
 # residuals of waste must equal to the amount of waste after recycling 
 @constraint(waste_carbon, resid2, Rc[2,1] + Rc[2,3] == 0.6225 .* (Wc[1,2] + Wc[2,2]))
 @constraint(waste_carbon, resid3, sum(Rc[3,:]) == 0)
-@constraint(waste_carbon, noresiddiag, sum(Rc[i, i] for i in I) == 0)
+@constraint(waste_carbon, noresiddiag, sum(Rc[c, c] for c in C) == 0)
 @constraint(waste_carbon, noresid, Rc[1,2] == 0)
 
 # binary variable of facility's operating (on/off) status to limit fixed cost
@@ -178,5 +183,8 @@ value.(Yc)
 value.(Wc)
 value.(Rc)
 ```
+The optimal objective value is $20966.89$, and the flows of waste is represented in the diagram below.
+
+![Waste Flow Diagram with Carbon Tax](IMG_1192.png)
 # References
 Lecture 15
